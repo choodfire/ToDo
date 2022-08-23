@@ -10,4 +10,6 @@ func main() {
 	t.Add("package main")
 	t.Add("Новобергеровское братство")
 	t.Add("big guy started a call. — Today at 9:50 PM")
+
+	t.Output()
 }
