@@ -1,6 +1,9 @@
 package main
 
-import "simpleCLI/data"
+import (
+	"flag"
+	"simpleCLI/data"
+)
 
 func main() {
 	t := data.Tasks{}
@@ -10,11 +13,31 @@ func main() {
 		panic(err)
 	}
 
-	//t.Add("First")
-	//t.Add("Second")
-	//t.Add("package main")
-	//t.Add("Новобергеровское братство")
-	//t.Add("big guy started a call. — Today at 9:50 PM")
-	//
-	//t.Output()
+	list := flag.Bool("list", false, "display list of tasks") // usage = help message
+	add := flag.String("add", "", "add a task")
+	complete := flag.Int("complete", 0, "mark task as completed")
+	unComplete := flag.Int("unсomplete", 0, "mark task as completed")
+	deleteTask := flag.Int("delete", 0, "mark task as completed")
+	flag.Parse()
+
+	if *list == true {
+		t.Output()
+	}
+
+	if len(*add) > 0 {
+		t.Add(*add)
+	}
+
+	if *complete != 0 {
+		t.MarkDone(*complete)
+	}
+
+	if *unComplete != 0 {
+		t.MarkUndone(*unComplete)
+	}
+
+	if *deleteTask != 0 {
+		t.Delete(*deleteTask)
+	}
+
 }
