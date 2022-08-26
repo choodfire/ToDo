@@ -2,6 +2,7 @@ package data
 
 import (
 	"encoding/json"
+	"errors"
 	"fmt"
 	"github.com/alexeyco/simpletable"
 	"io/ioutil"
@@ -137,30 +138,40 @@ func (t *Tasks) Add(title string) {
 	saveToFile(*t)
 }
 
-func (t *Tasks) Delete(index int) {
+func (t *Tasks) Delete(index int) error {
 	index = index - 1
 	if index > -1 && index < t.getLength() {
 		t.Tasks = append(t.Tasks[:index], t.Tasks[index+1:]...)
-
 		saveToFile(*t)
+
+		return nil
+	} else {
+		return errors.New("Wrong index!")
 	}
+
 }
 
-func (t *Tasks) MarkDone(index int) {
+func (t *Tasks) MarkDone(index int) error {
 	index = index - 1
 	if index > -1 && index < t.getLength() {
 		t.Tasks[index].markCompleted()
-
 		saveToFile(*t)
+
+		return nil
+	} else {
+		return errors.New("Wrong index!")
 	}
 }
 
-func (t *Tasks) MarkUndone(index int) {
+func (t *Tasks) MarkUndone(index int) error {
 	index = index - 1
 	if index > -1 && index < t.getLength() {
 		t.Tasks[index].markUnCompleted()
-
 		saveToFile(*t)
+
+		return nil
+	} else {
+		return errors.New("Wrong index")
 	}
 }
 
