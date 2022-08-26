@@ -6,21 +6,20 @@ import (
 	"fmt"
 	"github.com/alexeyco/simpletable"
 	"io/ioutil"
-	"log"
 	"os"
 	"time"
 )
 
 const (
-	colorReset  = "\033[0m"
-	colorRed    = "\033[31m"
-	colorGreen  = "\033[32m"
-	colorYellow = "\033[33m"
-	colorBlue   = "\033[34m"
-	colorPurple = "\033[35m"
-	colorCyan   = "\033[36m"
-	colorGray   = "\033[37m"
-	colorWhite  = "\033[97m"
+	colorReset = "\033[0m"
+	colorRed   = "\033[31m"
+	colorGreen = "\033[32m"
+	//colorYellow = "\033[33m"
+	//colorBlue   = "\033[34m"
+	//colorPurple = "\033[35m"
+	//colorCyan   = "\033[36m"
+	colorGray = "\033[37m"
+	//colorWhite  = "\033[97m"
 )
 
 type task struct {
@@ -120,10 +119,6 @@ func (t *Tasks) GetFromFile() error {
 		return err
 	}
 
-	if json.Valid(data) == false {
-		log.Fatal("JSON file isn't valid")
-	}
-
 	err = json.Unmarshal(data, &t)
 	if err != nil {
 		return err
@@ -180,6 +175,9 @@ func (t *Tasks) getLength() int {
 }
 
 func (t *Tasks) Output() {
+	if len(t.Tasks) == 0 {
+		return
+	}
 	table := simpletable.New()
 
 	table.Header = &simpletable.Header{

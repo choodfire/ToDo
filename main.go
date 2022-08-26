@@ -1,9 +1,12 @@
 package main
 
 import (
+	"errors"
 	"flag"
 	"fmt"
+	"os"
 	"simpleCLI/data"
+	"syscall"
 )
 
 func displayHelpMessage() {
@@ -20,15 +23,19 @@ func main() {
 
 	err := t.GetFromFile()
 	if err != nil {
-		panic(err)
+		if errors.Is(err, syscall.ERROR_FILE_NOT_FOUND) {
+			fmt.Println("TODO list is empty, add a new one using -add \"Taskname\"")
+			os.Exit(1)
+		}
+		//panic(err)
 	}
 
 	list := flag.Bool("list", false, "display list of tasks") // usage = help message
 	add := flag.String("add", "", "add a task")
 	complete := flag.Int("c", 0, "mark task as completed")
-	unComplete := flag.Int("uc", 0, "mark task as completed")
-	deleteTask := flag.Int("delete", 0, "mark task as completed")
-	help := flag.Bool("help", false, "output help")
+	unComplete := flag.Int("uc", 0, "mark task as uncompleted")
+	deleteTask := flag.Int("delete", 0, "delete task")
+	help := flag.Bool("help", false, "display help message")
 	flag.Parse()
 
 	if *list == true {
@@ -71,6 +78,7 @@ func main() {
 	if *help == true {
 		displayHelpMessage()
 	}
+
 }
 
 // todo change default message
