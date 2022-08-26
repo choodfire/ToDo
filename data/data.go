@@ -11,15 +11,15 @@ import (
 )
 
 const (
-	colorReset = "\033[0m"
-	colorRed   = "\033[31m"
-	Green      = "\033[32m"
-	Yellow     = "\033[33m"
-	Blue       = "\033[34m"
-	Purple     = "\033[35m"
-	Cyan       = "\033[36m"
-	Gray       = "\033[37m"
-	White      = "\033[97m"
+	colorReset  = "\033[0m"
+	colorRed    = "\033[31m"
+	colorGreen  = "\033[32m"
+	colorYellow = "\033[33m"
+	colorBlue   = "\033[34m"
+	colorPurple = "\033[35m"
+	colorCyan   = "\033[36m"
+	colorGray   = "\033[37m"
+	colorWhite  = "\033[97m"
 )
 
 type task struct {
@@ -38,14 +38,17 @@ func NewTask(title string) *task {
 }
 
 func (t *task) getTitle() string {
-	return t.Title
+	if t.IsDone == true {
+		return fmt.Sprintf(string(colorGreen) + t.Title + string(colorReset))
+	}
+	return fmt.Sprintf(string(colorGray) + t.Title + string(colorReset))
 }
 
 func (t *task) getIsDone() string {
 	if t.IsDone == true {
-		return "yes"
+		return fmt.Sprintf(string(colorGreen) + "yes" + string(colorReset))
 	}
-	return "no"
+	return fmt.Sprintf(string(colorRed) + "no" + string(colorReset))
 }
 
 func (t *task) getCreatedTime() string {
@@ -60,7 +63,7 @@ func (t *task) getCreatedTime() string {
 
 func (t *task) getCompletedTime() string {
 	if t.TimeCompleted.Equal(time.Date(1, 1, 1, 0, 0, 0, 0, time.UTC)) {
-		return "not completed yet"
+		return fmt.Sprintf(string(colorRed) + "not completed yet" + string(colorReset))
 	}
 	return fmt.Sprintf("%.2d.%.2d.%.2d %.2d:%.2d:%.2d", t.TimeCompleted.Day(),
 		t.TimeCompleted.Month(),

@@ -39,9 +39,7 @@ func main() {
 	if *deleteTask != 0 {
 		t.Delete(*deleteTask)
 	}
-
-	t.Output()
-
 }
 
 // todo add colors in output
+// todo add help bool flag
