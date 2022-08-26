@@ -8,7 +8,7 @@ import (
 func main() {
 	t := data.Tasks{}
 
-	err := t.GetFromJSON()
+	err := t.GetFromFile()
 	if err != nil {
 		panic(err)
 	}
@@ -40,4 +40,8 @@ func main() {
 		t.Delete(*deleteTask)
 	}
 
+	t.Output()
+
 }
+
+// todo add colors in output

@@ -4,11 +4,22 @@ import (
 	"encoding/json"
 	"fmt"
 	"github.com/alexeyco/simpletable"
-	_ "github.com/alexeyco/simpletable"
 	"io/ioutil"
 	"log"
 	"os"
 	"time"
+)
+
+const (
+	colorReset = "\033[0m"
+	colorRed   = "\033[31m"
+	Green      = "\033[32m"
+	Yellow     = "\033[33m"
+	Blue       = "\033[34m"
+	Purple     = "\033[35m"
+	Cyan       = "\033[36m"
+	Gray       = "\033[37m"
+	White      = "\033[97m"
 )
 
 type task struct {
@@ -48,6 +59,9 @@ func (t *task) getCreatedTime() string {
 }
 
 func (t *task) getCompletedTime() string {
+	if t.TimeCompleted.Equal(time.Date(1, 1, 1, 0, 0, 0, 0, time.UTC)) {
+		return "not completed yet"
+	}
 	return fmt.Sprintf("%.2d.%.2d.%.2d %.2d:%.2d:%.2d", t.TimeCompleted.Day(),
 		t.TimeCompleted.Month(),
 		t.TimeCompleted.Year(),
@@ -77,7 +91,7 @@ type Tasks struct {
 	Tasks []task `json:"tasks"`
 }
 
-func saveToJSON(t Tasks) {
+func saveToFile(t Tasks) {
 	if _, err := os.Stat("./data/data.json"); !os.IsNotExist(err) {
 		err := os.Remove("./data/data.json")
 		if err != nil {
@@ -96,7 +110,7 @@ func saveToJSON(t Tasks) {
 	}
 }
 
-func (t *Tasks) GetFromJSON() error {
+func (t *Tasks) GetFromFile() error {
 	data, err := ioutil.ReadFile("./data/data.json")
 	if err != nil {
 		return err
@@ -117,22 +131,37 @@ func (t *Tasks) GetFromJSON() error {
 func (t *Tasks) Add(title string) {
 	t.Tasks = append(t.Tasks, *NewTask(title))
 
-	saveToJSON(*t)
+	saveToFile(*t)
 }
 
-func (t *Tasks) Delete(index int) { // todo check index
-	t.Tasks = append(t.Tasks[:index], t.Tasks[index+1:]...)
+func (t *Tasks) Delete(index int) {
+	index = index - 1
+	if index > -1 && index < t.getLength() {
+		t.Tasks = append(t.Tasks[:index], t.Tasks[index+1:]...)
+
+		saveToFile(*t)
+	}
 }
 
-func (t *Tasks) MarkDone(index int) { // todo check index
-	t.Tasks[index].markCompleted()
+func (t *Tasks) MarkDone(index int) {
+	index = index - 1
+	if index > -1 && index < t.getLength() {
+		t.Tasks[index].markCompleted()
+
+		saveToFile(*t)
+	}
 }
 
-func (t *Tasks) MarkUndone(index int) { // todo check index
-	t.Tasks[index].markUnCompleted()
+func (t *Tasks) MarkUndone(index int) {
+	index = index - 1
+	if index > -1 && index < t.getLength() {
+		t.Tasks[index].markUnCompleted()
+
+		saveToFile(*t)
+	}
 }
 
-func (t *Tasks) getCount() int {
+func (t *Tasks) getLength() int {
 	return len(t.Tasks)
 }
 
@@ -151,10 +180,11 @@ func (t *Tasks) Output() {
 
 	i := 1
 	for _, task := range t.Tasks {
+
 		r := []*simpletable.Cell{
 			{Align: simpletable.AlignRight, Text: fmt.Sprintf("%d", i)},
-			{Text: task.getTitle()},
-			{Align: simpletable.AlignCenter, Text: task.getIsDone()},
+			{Align: simpletable.AlignLeft, Text: task.getTitle()},
+			{Align: simpletable.AlignLeft, Text: task.getIsDone()},
 			{Align: simpletable.AlignLeft, Text: task.getCreatedTime()},
 			{Align: simpletable.AlignLeft, Text: task.getCompletedTime()},
 		}
