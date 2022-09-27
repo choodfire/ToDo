@@ -5,7 +5,7 @@ import (
 	"errors"
 	"fmt"
 	"github.com/alexeyco/simpletable"
-	"io/ioutil"
+	"io"
 	"os"
 	"time"
 )
@@ -107,14 +107,19 @@ func saveToFile(t Tasks) {
 		panic(err)
 	}
 
-	err = ioutil.WriteFile("./data/data.json", file, 0644)
+	err = os.WriteFile("./data/data.json", file, 0644)
 	if err != nil {
 		panic(err)
 	}
 }
 
 func (t *Tasks) GetFromFile() error {
-	data, err := ioutil.ReadFile("./data/data.json")
+	jsonFile, err := os.Open("data/data.json")
+	if err != nil {
+		return err
+	}
+
+	data, err := io.ReadAll(jsonFile)
 	if err != nil {
 		return err
 	}

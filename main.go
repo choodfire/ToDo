@@ -1,11 +1,11 @@
 package main
 
 import (
+	"CLI/data"
 	"errors"
 	"flag"
 	"fmt"
 	"os"
-	"simpleCLI/data"
 	"syscall"
 )
 
@@ -18,17 +18,18 @@ func displayHelpMessage() {
 	fmt.Println("	-help				Display help message")
 }
 
-func main() {
-	t := data.Tasks{}
-
+func loadData(t *data.Tasks) {
 	err := t.GetFromFile()
 	if err != nil {
-		if errors.Is(err, syscall.ERROR_FILE_NOT_FOUND) {
+		if errors.Is(err, syscall.ENOENT) {
 			fmt.Println("TODO list is empty, add a new one using -add \"Taskname\"")
 			os.Exit(1)
 		}
-		//panic(err)
 	}
+}
+
+func main() {
+	t := data.Tasks{}
 
 	list := flag.Bool("list", false, "display list of tasks") // usage = help message
 	add := flag.String("add", "", "add a task")
@@ -39,16 +40,19 @@ func main() {
 	flag.Parse()
 
 	if *list == true {
+		loadData(&t)
 		t.Output()
 	}
 
 	if len(*add) > 0 {
+		t.GetFromFile()
 		t.Add(*add)
 		fmt.Printf("Task \"%s\" added to list\n", *add)
 		t.Output()
 	}
 
 	if *complete != 0 {
+		loadData(&t)
 		err := t.MarkDone(*complete)
 		if err != nil {
 			fmt.Println(err.Error())
@@ -58,6 +62,7 @@ func main() {
 	}
 
 	if *unComplete != 0 {
+		loadData(&t)
 		err := t.MarkUndone(*unComplete)
 		if err != nil {
 			fmt.Println(err.Error())
@@ -67,6 +72,7 @@ func main() {
 	}
 
 	if *deleteTask != 0 {
+		loadData(&t)
 		err := t.Delete(*deleteTask)
 		if err != nil {
 			fmt.Println(err.Error())
