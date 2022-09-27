@@ -1,7 +1,7 @@
 package main
 
 import (
-	"CLI/data"
+	"ToDo/data"
 	"errors"
 	"flag"
 	"fmt"
